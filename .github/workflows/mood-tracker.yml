@@ -12,19 +12,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+        with:
+          # Важно: даём права на запись
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Update mood diary
         run: |
           FILE="mood_diary.txt"
           TODAY=$(date +%Y-%m-%d)
           
-          # Если файла нет, создаём заголовок
           if [ ! -f "$FILE" ]; then
             echo "ДНЕВНИК НАСТРОЕНИЯ" > $FILE
             echo "" >> $FILE
           fi
           
-          # Добавляем запись на сегодня
           echo "$TODAY: ______" >> $FILE
           
       - name: Show result
@@ -32,8 +33,8 @@ jobs:
         
       - name: Commit and push changes
         run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
           git add .
           git commit -m "Добавлена запись настроения за $(date +%Y-%m-%d)"
           git push
