@@ -1,1 +1,39 @@
+name: 💬 Дневник настроения
 
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+
+jobs:
+  track-mood:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Update mood diary
+        run: |
+          FILE="mood_diary.txt"
+          TODAY=$(date +%Y-%m-%d)
+          
+          # Если файла нет, создаём заголовок
+          if [ ! -f "$FILE" ]; then
+            echo "ДНЕВНИК НАСТРОЕНИЯ" > $FILE
+            echo "" >> $FILE
+          fi
+          
+          # Добавляем запись на сегодня
+          echo "$TODAY: ______" >> $FILE
+          
+      - name: Show result
+        run: cat mood_diary.txt
+        
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add .
+          git commit -m "Добавлена запись настроения за $(date +%Y-%m-%d)"
+          git push
