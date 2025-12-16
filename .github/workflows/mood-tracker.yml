@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Важно: даём права на запись
+          # Ключевое изменение!
           token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Update mood diary
@@ -31,10 +31,9 @@ jobs:
       - name: Show result
         run: cat mood_diary.txt
         
-      - name: Commit and push changes
-        run: |
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git add .
-          git commit -m "Добавлена запись настроения за $(date +%Y-%m-%d)"
-          git push
+      - name: Commit and push
+        # Используем готовое действие для коммита
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Добавлена запись настроения за $(date +%Y-%m-%d)"
+          file_pattern: mood_diary.txt
